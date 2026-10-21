@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "reva.tarot",
+  "name": "Tarot Card of the Day",
+  "version": "1.0.0",
+  "author": "reva",
+  "license": "MIT",
+  "description": "Draws one tarot card a day from the full 78-card deck, with its meaning",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Tarot.qml"
+  },
+  "barWidget": {
+    "displayName": "Tarot Card of the Day",
+    "description": "Today's tarot card in the bar; click for the card and its reading",
+    "category": "Fun",
+    "allowMultiple": false,
+    "defaultSection": "center",
+    "defaults": {
+      "showName": true,
+      "reversals": true,
+      "maxLabelWidth": 140
+    },
+    "schema": [
+      {
+        "key": "showName",
+        "type": "boolean",
+        "label": "Show card name"
+      },
+      {
+        "key": "reversals",
+        "type": "boolean",
+        "label": "Allow reversed cards"
+      },
+      {
+        "key": "maxLabelWidth",
+        "type": "number",
+        "label": "Max name width"
+      }
+    ]
+  }
+}
