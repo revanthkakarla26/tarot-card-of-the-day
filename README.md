@@ -27,24 +27,61 @@ omarchy plugin enable reva.tarot --section center
 omarchy plugin disable reva.tarot
 ```
 
-## macOS menu bar version
+## macOS installation guide
 
-A SwiftBar plugin is included at `macos/swiftbar/tarot.10m.py`. It shows the
-same date-seeded daily card, upright or reversed reading, keywords, and a link
-to the card image. The menu uses the full 78-card offline deck.
+The macOS version is a separate SwiftBar menu bar plugin at
+`macos/swiftbar/tarot.10m.py`. It shows the same date-seeded daily card,
+upright or reversed reading, keywords, and a link to the card image. The
+menu uses the full 78-card offline deck.
 
-Install [SwiftBar](https://swiftbar.app/), select a plugin folder in its setup,
-and make sure Python 3 is available. From this repository's root, add the
-plugin to SwiftBar's default `~/.swiftbar` folder:
+### Requirements
+
+- macOS 12 or newer.
+- [SwiftBar](https://swiftbar.app/) and Python 3.
+- GitHub CLI (`gh`) access to clone this private repository. If you do not
+  have Homebrew, install it from [brew.sh](https://brew.sh/).
+
+### Install
+
+Install the apps and sign in to GitHub if needed:
 
 ```sh
-mkdir -p ~/.swiftbar
-chmod +x macos/swiftbar/tarot.10m.py
-ln -s "$(pwd)/macos/swiftbar/tarot.10m.py" ~/.swiftbar/tarot.10m.py
+brew install --cask swiftbar
+brew install python gh
+gh auth login
 ```
 
-If you selected a different SwiftBar plugin folder, use that path instead of
-`~/.swiftbar`. SwiftBar refreshes every 10 minutes and when its menu opens.
+Clone the repo and add its plugin to a dedicated SwiftBar folder:
+
+```sh
+mkdir -p ~/Projects ~/swiftbar-plugins
+gh repo clone revanthkakarla26/tarot-card-of-the-day ~/Projects/tarot-card-of-the-day
+chmod +x ~/Projects/tarot-card-of-the-day/macos/swiftbar/tarot.10m.py
+ln -s ~/Projects/tarot-card-of-the-day/macos/swiftbar/tarot.10m.py ~/swiftbar-plugins/
+```
+
+On first launch, set `~/swiftbar-plugins` as SwiftBar's plugin folder. If
+SwiftBar is already running, choose that folder in its settings, then refresh
+the plugins. The menu refreshes every 10 minutes and when opened.
+
+### Use and update
+
+Click the card in the menu bar to see the daily draw, its orientation, arcana,
+keywords, and reading. **View card image** opens the local scan. To update,
+pull the repo; the symlink keeps SwiftBar connected to the updated script and
+deck data. If you edit `deck.js`, regenerate the macOS data copy with
+`node macos/swiftbar/build_deck.js`.
+
+### Uninstall
+
+Remove the SwiftBar link and, if desired, the cloned repo:
+
+```sh
+rm ~/swiftbar-plugins/tarot.10m.py
+rm -rf ~/Projects/tarot-card-of-the-day
+```
+
+The Omarchy plugin remains documented and installed separately above.
 
 ## Configure
 
