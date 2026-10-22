@@ -27,6 +27,25 @@ omarchy plugin enable reva.tarot --section center
 omarchy plugin disable reva.tarot
 ```
 
+## macOS menu bar version
+
+A SwiftBar plugin is included at `macos/swiftbar/tarot.10m.py`. It shows the
+same date-seeded daily card, upright or reversed reading, keywords, and a link
+to the card image. The menu uses the full 78-card offline deck.
+
+Install [SwiftBar](https://swiftbar.app/), select a plugin folder in its setup,
+and make sure Python 3 is available. From this repository's root, add the
+plugin to SwiftBar's default `~/.swiftbar` folder:
+
+```sh
+mkdir -p ~/.swiftbar
+chmod +x macos/swiftbar/tarot.10m.py
+ln -s "$(pwd)/macos/swiftbar/tarot.10m.py" ~/.swiftbar/tarot.10m.py
+```
+
+If you selected a different SwiftBar plugin folder, use that path instead of
+`~/.swiftbar`. SwiftBar refreshes every 10 minutes and when its menu opens.
+
 ## Configure
 
 Set options on the plugin's entry in `~/.config/omarchy/shell.json`, or use
@@ -48,6 +67,10 @@ omarchy bar set reva.tarot showName false
 - `deck.js` — card names, keywords, meanings, and daily draw logic.
 - `cards/` — Rider–Waite–Smith card images.
 - `manifest.json` — Omarchy plugin metadata and settings schema.
+- `macos/swiftbar/` — SwiftBar menu bar version and generated deck data for macOS.
+
+When changing card data in `deck.js`, regenerate the macOS data copy with
+`node macos/swiftbar/build_deck.js`.
 
 The card scans are the 1909 Rider–Waite–Smith images described in the plugin
 source as public domain. The widget works offline after installation.
