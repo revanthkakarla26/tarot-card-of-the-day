@@ -435,11 +435,77 @@ function hash(text) {
   return h >>> 0
 }
 
+// mulberry32, a small seedable PRNG, driving a Fisher-Yates shuffle.
+function shuffled(count, seed) {
+  var state = seed >>> 0
+  function next() {
+    state = (state + 0x6D2B79F5) >>> 0
+    var t = state
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+  var deck = []
+  for (var i = 0; i < count; i++) deck.push(i)
+  for (var j = count - 1; j > 0; j--) {
+    var k = Math.floor(next() * (j + 1))
+    var swap = deck[j]
+    deck[j] = deck[k]
+    deck[k] = swap
+  }
+  return deck
+}
+
+// Cards are dealt from a shuffled deck: each round of 78 days shows every
+// card once, in a fresh order. A card from the last GAP days of one round
+// is swapped out of the first GAP days of the next, so no card comes back
+// within GAP days. Swaps never touch a round's last GAP days, so the next
+// round can rely on them.
+var GAP = 20
+
+function rawRound(r) {
+  return shuffled(CARDS.length, hash("reva.tarot:round:" + r))
+}
+
+function spaced(deck, prevDeck, keyOf, gap) {
+  var count = deck.length
+  if (count < gap * 3) return deck
+  var recent = {}
+  for (var t = count - gap; t < count; t++) recent[keyOf(prevDeck[t])] = true
+  var j = gap
+  for (var i = 0; i < gap; i++) {
+    if (!recent[keyOf(deck[i])]) continue
+    while (j < count - gap && recent[keyOf(deck[j])]) j++
+    if (j >= count - gap) break
+    var swap = deck[i]
+    deck[i] = deck[j]
+    deck[j] = swap
+    j++
+  }
+  return deck
+}
+
+var cached = { round: null, deck: null }
+
+function round(r) {
+  if (cached.round !== r) {
+    var same = function(card) { return card }
+    cached = { round: r, deck: spaced(rawRound(r), rawRound(r - 1), same, GAP) }
+  }
+  return cached.deck
+}
+
+function dayNumber(dateKey) {
+  var p = dateKey.split("-")
+  return Math.floor(Date.UTC(+p[0], +p[1] - 1, +p[2]) / 86400000)
+}
+
 // One card per date key ("2026-10-21"); the same key always draws the same card.
 function drawFor(dateKey, allowReversed) {
-  var h = hash("reva.tarot:" + dateKey)
+  var day = dayNumber(dateKey)
+  var count = CARDS.length
   return {
-    card: CARDS[h % CARDS.length],
+    card: CARDS[round(Math.floor(day / count))[day % count]],
     reversed: allowReversed && (hash("reversed:" + dateKey) & 1) === 1
   }
 }
